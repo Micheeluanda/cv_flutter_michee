@@ -1,10 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
-import 'auth_credentials.dart';
+import '../../core/api/api_exception.dart';
+import '../../core/api/api_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.onLogin});
+  const LoginPage({super.key, required this.apiService, required this.onLogin});
 
+  final ApiService apiService;
   final VoidCallback onLogin;
 
   @override
@@ -13,43 +15,71 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _identifierController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
+  bool _registering = false;
   String? _errorMessage;
+  String? _successMessage;
 
   @override
   void dispose() {
-    _identifierController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
-    setState(() => _errorMessage = null);
+    setState(() {
+      _errorMessage = null;
+      _successMessage = null;
+    });
 
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    if (mounted) {
-      final identifier = _identifierController.text.trim();
-      final password = _passwordController.text;
+    try {
+      await widget.apiService.postJson(
+        _registering ? '/accounts/register' : '/accounts/login',
+        {
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text,
+        },
+      );
+      if (!mounted) return;
 
-      if (identifier != AuthCredentials.identifier ||
-          password != AuthCredentials.password) {
+      if (_registering) {
         setState(() {
           _loading = false;
-          _errorMessage = 'Identifiant ou mot de passe incorrect.';
+          _registering = false;
+          _successMessage =
+              'Compte créé. Vous pouvez maintenant vous connecter.';
         });
-        return;
+      } else {
+        setState(() => _loading = false);
+        widget.onLogin();
       }
-
-      setState(() => _loading = false);
-      widget.onLogin();
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _errorMessage =
+            !_registering &&
+                (error.statusCode == 401 || error.statusCode == 403)
+            ? 'Adresse e-mail ou mot de passe incorrect.'
+            : error.message;
+      });
     }
+  }
+
+  void _toggleMode() {
+    setState(() {
+      _registering = !_registering;
+      _errorMessage = null;
+      _successMessage = null;
+    });
   }
 
   @override
@@ -128,14 +158,16 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            'Bienvenue',
+                            _registering ? 'Créer un compte' : 'Bienvenue',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineMedium
                                 ?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Accédez à mon portfolio professionnel',
+                            _registering
+                                ? 'Inscrivez-vous pour accéder à mon portfolio'
+                                : 'Accédez à mon portfolio professionnel',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(color: scheme.onSurfaceVariant),
@@ -147,19 +179,21 @@ class _LoginPageState extends State<LoginPage> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 TextFormField(
-                                  controller: _identifierController,
+                                  controller: _emailController,
+                                  keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
-                                  autofillHints: const [AutofillHints.username],
+                                  autofillHints: const [AutofillHints.email],
                                   decoration: const InputDecoration(
-                                    labelText: 'Identifiant',
-                                    hintText: 'Votre identifiant',
-                                    prefixIcon: Icon(
-                                      Icons.person_outline_rounded,
-                                    ),
+                                    labelText: 'Adresse e-mail',
+                                    hintText: 'vous@exemple.com',
+                                    prefixIcon: Icon(Icons.email_outlined),
                                   ),
                                   validator: (value) =>
                                       value == null || value.trim().isEmpty
-                                      ? 'L’identifiant est obligatoire.'
+                                      ? 'L’adresse e-mail est obligatoire.'
+                                      : !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                                            .hasMatch(value.trim())
+                                      ? 'Saisissez une adresse e-mail valide.'
                                       : null,
                                 ),
                                 const SizedBox(height: 16),
@@ -171,7 +205,9 @@ class _LoginPageState extends State<LoginPage> {
                                   autofillHints: const [AutofillHints.password],
                                   decoration: InputDecoration(
                                     labelText: 'Mot de passe',
-                                    hintText: 'Votre mot de passe',
+                                    hintText: _registering
+                                        ? 'Choisissez un mot de passe'
+                                        : 'Votre mot de passe',
                                     prefixIcon: const Icon(
                                       Icons.lock_outline_rounded,
                                     ),
@@ -193,6 +229,16 @@ class _LoginPageState extends State<LoginPage> {
                                       ? 'Le mot de passe est obligatoire.'
                                       : null,
                                 ),
+                                if (_successMessage != null) ...[
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    _successMessage!,
+                                    style: TextStyle(
+                                      color: scheme.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                                 if (_errorMessage != null) ...[
                                   const SizedBox(height: 12),
                                   Container(
@@ -237,19 +283,18 @@ class _LoginPageState extends State<LoginPage> {
                                             color: Colors.white,
                                           ),
                                         )
-                                      : const Text('Se connecter'),
+                                      : Text(
+                                          _registering
+                                              ? 'Créer mon compte'
+                                              : 'Se connecter',
+                                        ),
                                 ),
-                                const SizedBox(height: 14),
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: scheme.surfaceContainerHighest
-                                        .withValues(alpha: 0.55),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Text(
-                                    'Démo : michee / cv2026',
-                                    textAlign: TextAlign.center,
+                                TextButton(
+                                  onPressed: _loading ? null : _toggleMode,
+                                  child: Text(
+                                    _registering
+                                        ? 'Déjà inscrit ? Se connecter'
+                                        : 'Créer un compte',
                                   ),
                                 ),
                               ],

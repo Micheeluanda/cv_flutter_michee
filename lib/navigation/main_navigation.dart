@@ -5,7 +5,9 @@ import '../features/family/family_page.dart';
 import '../features/contact/contact_page.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  const MainNavigation({super.key, required this.onLogout});
+
+  final VoidCallback onLogout;
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -49,6 +51,11 @@ class _MainNavigationState extends State<MainNavigation> {
                   onDestinationSelected: (index) =>
                       setState(() => _index = index),
                   labelType: NavigationRailLabelType.all,
+                  trailing: IconButton(
+                    tooltip: 'Se déconnecter',
+                    onPressed: widget.onLogout,
+                    icon: const Icon(Icons.logout_rounded),
+                  ),
                   leading: const Padding(
                     padding: EdgeInsets.only(bottom: 20),
                     child: CircleAvatar(radius: 24, child: Text('ML')),
@@ -80,6 +87,15 @@ class _MainNavigationState extends State<MainNavigation> {
 
         return Scaffold(
           body: content,
+          appBar: AppBar(
+            actions: [
+              IconButton(
+                tooltip: 'Se déconnecter',
+                onPressed: widget.onLogout,
+                icon: const Icon(Icons.logout_rounded),
+              ),
+            ],
+          ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: _index,
             onDestinationSelected: (index) => setState(() => _index = index),

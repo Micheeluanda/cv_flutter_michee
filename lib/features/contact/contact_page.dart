@@ -4,8 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
 
-  static const _phone = '0975985796';
-  static const _email = 'luandamichee@gmail.com';
+  static const _phone = '+243(0)975985796';
+  static const _email = 'luandamichee011@gmail.com';
   static const _location = 'Goma, Nord-Kivu, RDC';
   static const _linkedIn = 'https://www.linkedin.com/in/michée-luanda-b921a03b1/';
   static const _gitHub = 'https://github.com/Micheeluanda';
