@@ -28,6 +28,38 @@ La page Contact facilite la prise de contact et rassemble les informations perme
 
 ![Page Contact](screenshots/contact.png)
 
+## Fonctionnalités principales
+
+1. **Authentification via API REST** : inscription et connexion avec une adresse e-mail et un mot de passe.
+2. **Consultation des membres de la famille** : les informations et les photos sont chargées depuis l'API.
+3. **Ajout d'un membre** : formulaire de saisie avec photo facultative.
+4. **Modification d'un membre** : mise à jour des informations et remplacement éventuel de la photo.
+5. **Suppression d'un membre** : confirmation avant suppression.
+6. **Persistance MySQL** : les opérations passent par l'API REST, qui lit et enregistre les données dans la base MySQL.
+
+## Démonstration vidéo
+
+Cette vidéo présente le fonctionnement de l'application et ses principales fonctionnalités.
+
+[![Voir la démonstration vidéo sur YouTube](https://img.youtube.com/vi/SQDCNyeqwd4/hqdefault.jpg)](https://youtu.be/SQDCNyeqwd4)
+
+## Authentification
+
+L'inscription et la connexion envoient l'adresse e-mail et le mot de passe aux
+endpoints `POST /accounts/register` et `POST /accounts/login`. Le serveur
+valide les identifiants et gère le stockage des mots de passe. L'URL de base de
+l'API est définie dans `lib/core/api/api_config.dart` (par défaut
+`http://localhost/api-test/public`, ou `http://10.0.2.2/api-test/public` sur
+l'émulateur Android). Il faut démarrer le backend à cette adresse avant de
+s'inscrire ou de se connecter.
+
+## Gestion de la famille
+
+La page Famille charge et modifie les membres via les endpoints
+`/famille-membres`. Les champs envoyés conservent les noms du backend :
+`nom`, `postnom`, `prenom`, `lieu_naissance`, `date_naissance` et `parente`.
+Les photos facultatives sont envoyées en multipart sous le champ `image`.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
