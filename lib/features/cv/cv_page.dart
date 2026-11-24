@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CvPage extends StatelessWidget {
   const CvPage({super.key});
@@ -35,16 +35,25 @@ class CvPage extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: wide ? 54 : 42,
-                            backgroundColor: scheme.primary,
-                            child: Text(
-                              'ML',
-                              style: Theme.of(context).textTheme.headlineMedium
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                          Container(
+                            width: wide ? 108 : 84,
+                            height: wide ? 108 : 84,
+                            decoration: BoxDecoration(
+                              color: scheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: scheme.shadow.withValues(alpha: 0.12),
+                                  blurRadius: 18,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.asset(
+                              'assets/images/profile.PNG',
+                              fit: BoxFit.cover,
+                              alignment: Alignment.topCenter,
                             ),
                           ),
                           const SizedBox(width: 20),
@@ -61,7 +70,7 @@ class CvPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Développeur Flutter',
+                                  'Développeur junior',
                                   style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(
                                         color: scheme.primary,
@@ -74,7 +83,7 @@ class CvPage extends StatelessWidget {
                                   children: [
                                     Icon(Icons.location_on_outlined, size: 17),
                                     SizedBox(width: 4),
-                                    Text('Kinshasa, RDC'),
+                                    Text('Goma, RDC'),
                                   ],
                                 ),
                               ],
@@ -94,7 +103,12 @@ class CvPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Text(
-                          'Développeur passionné par la création d’applications mobiles élégantes, performantes et accessibles. J’aime transformer des idées en expériences fluides et utiles.',
+                          '''
+Informaticien en formation, passionné par les nouvelles technologies et le développement de solutions numériques.
+Je développe progressivement mes compétences en programmation, développement web et mobile, intelligence artificielle, cybersécurité et technologies cloud.
+
+Je suis également mécanicien industriel, avec une bonne maîtrise du fonctionnement, de l’entretien et de la réparation des machines industrielles. Doté d’un bon sens de l’analyse et du diagnostic technique, je suis capable d’identifier les pannes et de contribuer efficacement au bon fonctionnement des équipements.
+''',
                           style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(height: 1.55),
                         ),
@@ -111,12 +125,15 @@ class CvPage extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: const [
+                        Chip(label: Text('HTML5')),
+                        Chip(label: Text('JavaScript')),
+                        Chip(label: Text('Material Design')),
                         Chip(label: Text('Flutter')),
                         Chip(label: Text('Dart')),
-                        Chip(label: Text('Material Design')),
                         Chip(label: Text('Firebase')),
                         Chip(label: Text('Git')),
-                        Chip(label: Text('Responsive UI')),
+                        Chip(label: Text('UI/UX Design')),
+                        Chip(label: Text('machines mecaniques')),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -128,15 +145,15 @@ class CvPage extends StatelessWidget {
                     const SizedBox(height: 12),
                     _TimelineCard(
                       icon: Icons.phone_android_rounded,
-                      title: 'Développeur mobile Flutter',
-                      subtitle: 'Projets professionnels · 2024 — Aujourd’hui',
-                      description: 'Conception d’interfaces modernes, intégration fonctionnelle et optimisation des applications mobiles.',
+                      title: 'opérateur de machine à CONGO TOBACCO COMPANY',
+                      subtitle: '2021 — 2023',
+                      description: 'Surveillance et reparation de machines',
                     ),
                     const SizedBox(height: 12),
                     _TimelineCard(
                       icon: Icons.school_outlined,
-                      title: 'Formation en informatique',
-                      subtitle: 'Parcours académique · 2022 — 2025',
+                      title: 'Formation en informatique a l\'ISIG Goma',
+                      subtitle: 'Parcours académique · 2023 à nos jours',
                       description: 'Études centrées sur le développement logiciel, les bases de données et les technologies mobiles.',
                     ),
                   ],

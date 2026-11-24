@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class FamilyPage extends StatelessWidget {
   const FamilyPage({super.key});
@@ -6,10 +6,8 @@ class FamilyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final members = const [
-      ('Père', 'Mr. Luanda', 'Conseiller & guide familial', 'PL'),
-      ('Mère', 'Mme. Luanda', 'Pilier de la famille', 'ML'),
-      ('Frère', 'Junior Luanda', 'Étudiant en informatique', 'JL'),
-      ('Sœur', 'Grace Luanda', 'Professionnelle créative', 'GL'),
+      ('Mère', 'Riziki Mubogo', 'Pilier de la famille', 'RM', 'assets/images/maman.jpg'),
+      ('Sœur', 'Laurence Doma', 'eleve', 'LD', 'assets/images/soeur.jpg'),
     ];
 
     return SafeArea(
@@ -65,6 +63,7 @@ class FamilyPage extends StatelessWidget {
                       name: member.$2,
                       description: member.$3,
                       initials: member.$4,
+                      imagePath: member.$5,
                     );
                   }, childCount: members.length),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -89,8 +88,10 @@ class _MemberCard extends StatelessWidget {
     required this.name,
     required this.description,
     required this.initials,
+    this.imagePath,
   });
   final String relation, name, description, initials;
+  final String? imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -104,14 +105,27 @@ class _MemberCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: scheme.primaryContainer,
-                  child: Text(
-                    initials,
-                    style: TextStyle(
-                      color: scheme.primary,
-                      fontWeight: FontWeight.w800,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: imagePath == null
+                        ? Container(
+                      alignment: Alignment.center,
+                      color: scheme.primaryContainer,
+                      child: Text(
+                        initials,
+                        style: TextStyle(
+                          color: scheme.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    )
+                        : Image.asset(
+                      imagePath!,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
                     ),
                   ),
                 ),
